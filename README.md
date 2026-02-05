@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18450309.svg)](https://doi.org/10.5281/zenodo.18450309)    [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18495688.svg)](https://doi.org/10.5281/zenodo.18495688)
+
 # A Phonological Plausibility Framework for Evaluating Unknown or Ambiguous Symbol Strings
 
 This repository provides a minimal, illustrative Python implementation of the framework described in *Basu, A. (2026). A Phonological Plausibility Framework for Evaluating Unknown or Ambiguous Symbol Strings. Zenodo. https://doi.org/10.5281/zenodo.18450309*. The framework explicitly separates structure from sound, as stated in the abstract of the method note.
@@ -6,8 +8,7 @@ This repository provides a minimal, illustrative Python implementation of the fr
 
 -------
 
-This implementation is deliberately simplified and intended for conceptual demonstration only. It shows how
-phonological plausibility can be evaluated comparatively, structurally, and transparently, without attempting decipherment, phonetic reconstruction, or semantic interpretation.
+This implementation is deliberately simplified and intended for conceptual demonstration only. It shows how phonological plausibility can be evaluated comparatively, structurally, and transparently, without attempting decipherment, phonetic reconstruction, or semantic interpretation.
 
 The process is this:
 
@@ -51,7 +52,7 @@ It does not care where the skeleton came from. It treats all skeletons equally. 
 
 ## Comparative plausibility scores
 
-The sources of strain are labelled and displayed alongside the numeric score for plausibility of the string being realised in a language family.
+The sources of strain are labelled and displayed alongside the numeric score for the plausibility of the structure being accommodated by a language-family profile.
 
 Repair diagnostics answer the question: "How would this system typically make it legal?" In other words, if a language family like X were forced to host this structure, what is the kind of repair it would usually perform?
 
@@ -80,6 +81,110 @@ The framework does not identify languages and neither does it recover pronunciat
 - Repair diagnostics describe typical adaptation strategies, and not actual historical or phonetic outcomes.
 
 Uniformly high scores across profiles are an indication that the string is unremarkable at this level of abstraction.
+
+--------
+
+## Additional exploratory module: phonological probe
+
+This repository also includes an optional exploratory script, `phonological_probe.py`.
+
+This script is not part of the core plausibility framework described in the preceding paragraphs. It is provided as a sandbox-style extension that demonstrates how the output of the framework might be used to probe possible sound-space constraints, without performing decipherment, phoneme assignment, or semantic interpretation.
+
+The probe exists to answer a very narrow and carefully scoped question:
+
+> Given a structural skeleton that appears phonologically plausible under one or more profiles, what kinds of sound categories could, in principle, occupy each position without violating broad typological constraints?
+
+It does not attempt to:
+
+-  Identify languages
+-  Recover pronunciations
+-  Assign fixed sound values to symbols
+-  Validate real lexical items
+
+If a generated sequence accidentally corresponds to a real word, such a word is explicitly treated as invalid and discarded.
+
+
+### Conceptual pipeline of the probe
+
+The probe extends the original framework with a strictly gated pipeline:
+
+```
+Symbol string
+     ↓
+Skeleton generation (core framework)
+     ↓
+Profile plausibility filtering
+     ↓
+Broad phonological category constraints
+     ↓
+Pronounceability filters (profile-specific)
+     ↓
+Entropy-based failure detection
+     ↓
+Either:
+  - Structured sound-category constraints
+  - Explicit failure (no safe hypothesis)
+```
+
+The probe runs only if at least one phonological profile can host a skeleton with low strain. Otherwise, it fails early and returns no sound hypotheses.
+
+### Broad phonological categories
+
+Instead of phonemes, the probe works with broad sound categories, for example:
+
+```
+PHONO_CATEGORIES = {
+    "stop": ["b", "d", "g", "k", "t"],
+    "fricative": ["s", "ʃ", "x"],
+    "sonorant": ["m", "n", "r", "l"]
+}
+```
+
+These categories are stress probes. They are not sound inventories. They encode resistance patterns (for example, "too many stops in a row") rather than linguistic facts.
+
+Users may extend or modify these categories, but doing so increases the expressive power of the probe and, therefore, its risk of overfitting.
+
+### Profile-specific phonotactic filters
+
+Each phonological profile applies a very conservative pronounceability filter, encoding only broad typological tendencies. These filters are intentionally crude and incomplete. They do not model any real language. 
+
+Examples of encoded constraints include:
+
+-  Resistance to long consonant clusters
+-  Preference for CV alternation
+-  Tolerance of consonant-only roots
+-  Syllable-shape restrictions
+
+The goal is not acceptance, but early rejection.
+
+### Entropy-based failure detection
+
+Entropy is used here informally to describe degrees of freedom.  After constraints are applied, the probe measures how much freedom remains in the sound-space. A high entropy indicates that almost anything is still possible, while a low entropy indicates that several possibilities have been eliminated.
+
+The probe declares a failure if:
+
+-  Too many positions collapse to a single category, or
+-  Too few viable combinations survive filtering,
+
+This prevents the system from:
+
+-  Hallucinating precision
+-  Converging prematurely on a single "reading"
+-  Producing outputs that look specific but are unjustified
+
+A failure result is considered a successful safeguard, not an error.
+
+### How to run the probe
+
+From the terminal, run: `python cli_probe.py`.
+
+The probe reports EITHER structured, profile-conditional sound-category constraints OR an explicit failure message explaining why sound generation was not safe.
+
+### Cautionary note
+
+This probe is illustrative only. It exists to show how a falsification-oriented plausibility framework can be extended without crossing into decipherment.
+
+Users interested in extending this module should do so carefully, and treat all outputs as non-linguistic scaffolding and not as hypotheses about real languages.
 
 --------
 
