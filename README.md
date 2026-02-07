@@ -188,11 +188,11 @@ Users interested in extending this module should do so carefully, and treat all 
 
 --------
 
-```
 The name of the repository, `neti-neti`, is inspired from the Brihadaranyak Upanishad (2.3.6), and embodies the principles of elimination that this framework aims to do. 
 
 "अथात आदेशः नेति नेति, न ह्येतस्मादिति नेत्यन्यत्परमस्ति;"
  
 "Now therefore the description: 'Not this, not this'. Because there is no other and more appropriate description than this 'Not this'. "
 
-```
+--------
+
